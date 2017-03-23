@@ -13,6 +13,8 @@ dependencies {
     compile 'org.mongodb.morphia:morphia:1.3.2'
     compile("org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE")
     testCompile("org.springframework.boot:spring-boot-starter-test:1.5.2.RELEASE")
+    testCompile("junit:junit:4.12")
+    
 }
 
 task createJavaProject << {
@@ -20,8 +22,5 @@ task createJavaProject << {
     sourceSets*.resources.srcDirs*.each { it.mkdirs()}
 }
 
-allprojects {
-    apply plugin: 'idea'
-}
 
 
