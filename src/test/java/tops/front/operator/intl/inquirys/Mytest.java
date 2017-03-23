@@ -1,10 +1,13 @@
-package tops.
+package tops.front.operator.intl.inquirys;
+
+import org.junit.Test;
+
 public class Mytest{
 	
 	
-	@T
-	String test(){
-		
+	@Test
+	public void test(){
+		System.out.println("have a test");
 	}
 	
 	
