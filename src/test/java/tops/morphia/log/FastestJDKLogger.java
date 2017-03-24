@@ -8,7 +8,7 @@ public class FastestJDKLogger  implements tops.morphia.log.Logger{
     
     public FastestJDKLogger(final Class c) {
         className = c.getName();
-        logger = java.util.logging.Logger.getLogger(className);
+        logger = (Logger) java.util.logging.Logger.getLogger(className);
     }
     
 	@Override

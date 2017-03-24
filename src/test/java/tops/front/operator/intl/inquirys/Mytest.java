@@ -19,5 +19,39 @@ public class Mytest {
 	private Date datetime;
 	@Reference
 	private Mytest mytest;
+	
+	
+	public ObjectId getId() {
+		return id;
+	}
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getTage() {
+		return tage;
+	}
+	public void setTage(int tage) {
+		this.tage = tage;
+	}
+	public Date getDatetime() {
+		return datetime;
+	}
+	public void setDatetime(Date datetime) {
+		this.datetime = datetime;
+	}
+	public Mytest getMytest() {
+		return mytest;
+	}
+	public void setMytest(Mytest mytest) {
+		this.mytest = mytest;
+	}
+	
+	
 
 }
