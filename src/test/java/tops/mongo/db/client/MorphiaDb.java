@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.query.FindOptions;
+import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 
 import com.mongodb.MongoClient;
@@ -59,7 +60,7 @@ public class MorphiaDb {
 	}
 	
 	@Test
-	public void test(){
+	public void Saving(){
 			Datastore datastore = getDatastore();
 			Mytest mytest = new Mytest();
 			mytest.setDatetime(new Date());
@@ -130,6 +131,9 @@ public class MorphiaDb {
 		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 4);
 		ops = datastore.createUpdateOperations(Mytest.class).dec("stars");
 		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", -4);
+		
+		Query<Mytest> underPaidQuery = datastore.createQuery(Mytest.class).filter("salary <=", 3000);
+	    UpdateOperations<Mytest> updateOperations = datastore.createUpdateOperations(Mytest.class).inc("salary", 10000);
 	}
 	
 	@Test
@@ -154,6 +158,11 @@ public class MorphiaDb {
 		ops= datastore.createUpdateOperations(Mytest.class).removeAll("roomNumbers", 3);// [ 1, 2 ]
 		//given roomNumbers = [ 1, 2, 3, 3 ]  
 		ops=datastore.createUpdateOperations(Mytest.class).removeAll("roomNumbers", Arrays.asList(2, 3)); // [ 1 ]
+		
+		Query<Mytest> overPaidQuery = datastore.createQuery(Mytest.class).filter("salary >", 100000);
+		datastore.delete(overPaidQuery);
+		
+		
 	}
 	
 	@Test
@@ -183,6 +192,14 @@ public class MorphiaDb {
 		Datastore datastore = getDatastore();
 		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 50);
 		datastore.updateFirst(datastore.createQuery(Mytest.class).field("stars").greaterThan(100),ops, true);
+	}
+	
+	public void Querying(){
+		Datastore datastore = getDatastore();
+		final Query<Mytest> query = datastore.createQuery(Mytest.class);
+		final List<Mytest> employees = query.asList();
+	    datastore.createQuery(Mytest.class).field("salary").lessThanOrEq(30000).asList();
+	    List<Mytest> underpaid = datastore.createQuery(Mytest.class).filter("salary <=", 30000).asList();
 		
 	}
 }
