@@ -2,36 +2,45 @@ package tops.front.operator.intl.inquirys;
 
 import java.util.Date;
 
+import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
-import org.mongodb.morphia.annotations.Transient;
+import org.mongodb.morphia.annotations.IndexOptions;
+import org.mongodb.morphia.annotations.Indexed;
 
 import com.sun.corba.se.spi.ior.ObjectId;
 
 @Entity("Mytest")
+
+//@Indexes({@Index(fields = {@Field(value = "name")})})
 public class Mytest {
 	@Id
 	private ObjectId id;
-	@Transient
+	
 	private String name;
+	@Indexed(options=@IndexOptions(unique=true))
 	private int tage;
 	private Date datetime;
-	@Reference
-	private Mytest mytest;
+	@Embedded
+	private School school;
 	
-	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public ObjectId getId() {
 		return id;
 	}
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-	public String getName() {
-		return name;
+	public School getSchool() {
+		return school;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setSchool(School school) {
+		this.school = school;
 	}
 	public int getTage() {
 		return tage;
@@ -45,13 +54,9 @@ public class Mytest {
 	public void setDatetime(Date datetime) {
 		this.datetime = datetime;
 	}
-	public Mytest getMytest() {
-		return mytest;
+	@Override
+	public String toString() {
+		return "Mytest [id=" + id + ", name=" + name + ", tage=" + tage + ", datetime=" + datetime + "]";
 	}
-	public void setMytest(Mytest mytest) {
-		this.mytest = mytest;
-	}
-	
-	
-
+    
 }
