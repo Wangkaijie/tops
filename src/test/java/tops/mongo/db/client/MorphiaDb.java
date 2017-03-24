@@ -2,6 +2,7 @@ package tops.mongo.db.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import tops.front.operator.intl.inquirys.Mytest;
 import tops.front.operator.intl.inquirys.School;
 
 public class MorphiaDb {
+	UpdateOperations ops  =null;
 	public  Datastore  getDatastore(String DabaName,String Packagename,String Address) throws IOException{
 		Morphia morphia = new Morphia();
 		
@@ -75,15 +77,9 @@ public class MorphiaDb {
 		}
 	}
 	
-	@Test
-	public void update() throws IOException{
-		Datastore datastore = getDatastore();
-		UpdateOperations ops = datastore.createUpdateOperations(Mytest.class)
-				.set("name", "Fairmont Chateau Laurier");
-	}
 	
 	@Test
-	public void remove() throws IOException{
+	public void removess() throws IOException{
 		Datastore datastore = getDatastore();
 		datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1000);
 		datastore.createQuery(Mytest.class).filter("tage >=", 1000);
@@ -122,5 +118,71 @@ public class MorphiaDb {
 	@Test
 	public void Ordering() throws IOException{
 		Datastore datastore = getDatastore();
+		datastore.createQuery(Mytest.class).order("name");
+	}
+	
+	@Test
+	public void update(){
+		Datastore datastore = getDatastore();
+	    ops = datastore.createUpdateOperations(Mytest.class).set("name", "Fairmont Chateau Laurier");
+		ops = datastore.createUpdateOperations(Mytest.class).set("school.Address", "Ottawa");
+		ops = datastore.createUpdateOperations(Mytest.class).inc("stars");
+		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 4);
+		ops = datastore.createUpdateOperations(Mytest.class).dec("stars");
+		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", -4);
+	}
+	
+	@Test
+	public void push(){
+		Datastore datastore = getDatastore();
+		ops = datastore.createUpdateOperations(Mytest.class).push("roomNumbers", 11);
+		ops = datastore.createUpdateOperations(Mytest.class).addToSet("roomNumbers", 11);
+	}
+	
+	@Test
+	public void remove(){
+		Datastore datastore = getDatastore();
+		//given roomNumbers = [ 1, 2, 3 ]
+		ops = datastore.createUpdateOperations(Mytest.class).removeFirst("roomNumbers"); // [ 2, 3 ]
+		
+		//given roomNumbers = [ 1, 2, 3 ]
+		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [ 1, 2 ]
+		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [1]
+		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [  ]
+		
+		//given roomNumbers = [ 1, 2, 3, 3 ]
+		ops= datastore.createUpdateOperations(Mytest.class).removeAll("roomNumbers", 3);// [ 1, 2 ]
+		//given roomNumbers = [ 1, 2, 3, 3 ]  
+		ops=datastore.createUpdateOperations(Mytest.class).removeAll("roomNumbers", Arrays.asList(2, 3)); // [ 1 ]
+	}
+	
+	@Test
+	public void updateFirst(){
+		Datastore datastore = getDatastore();
+	    ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 50);
+		datastore.updateFirst(datastore.find(Mytest.class).order("stars"), ops);
+		datastore.updateFirst(datastore.find(Mytest.class).order("-stars"),ops);
+	}
+	
+	@Test
+	public void Multiple(){
+		Datastore datastore = getDatastore();
+		//set city to Ottawa and increment stars by 1
+		ops = datastore.createUpdateOperations(Mytest.class).set("city", "Ottawa").inc("stars");
+
+		//if you perform multiple operations in one command on the same property, results will vary
+		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 50).inc("stars");  //increments by 1
+		ops = datastore.createUpdateOperations(Mytest.class).inc("stars").inc("stars", 50);  //increments by 50
+
+		//you can't apply conflicting operations to the same property
+		ops = datastore.createUpdateOperations(Mytest.class).set("stars", 1).inc("stars", 50); //causes error
+		
+	}
+	@Test
+	public void createIfMissing(){
+		Datastore datastore = getDatastore();
+		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 50);
+		datastore.updateFirst(datastore.createQuery(Mytest.class).field("stars").greaterThan(100),ops, true);
+		
 	}
 }
