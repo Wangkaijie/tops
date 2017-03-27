@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.query.Criteria;
+import org.mongodb.morphia.query.CriteriaContainer;
 import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.QueryImpl;
 import org.mongodb.morphia.query.UpdateOperations;
 
 import com.mongodb.MongoClient;
@@ -63,31 +67,33 @@ public class MorphiaDb {
 	public void Saving(){
 			Datastore datastore = getDatastore();
 			Mytest mytest = new Mytest();
+			School school=new School();
+			school.setAddress("hulanxilu");
+			school.setName("zhenlvwang");
 			mytest.setDatetime(new Date());
 			mytest.setName("dddd");
 			mytest.setTage(1050);
+			mytest.setSchool(school);
 			datastore.save(mytest);
 	}
 	
 	@Test
 	public void find() throws IOException{
 		Datastore datastore = getDatastore();
-		List<Mytest> mytests = datastore.find(Mytest.class).filter("name =", "dddd").asList();
+		List<Mytest> mytests = datastore.find(Mytest.class).filter("tage ==", 1050).asList();
+		List<Mytest>   list =datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1050).asList();
+		System.out.println(mytests.size());
 		for (Mytest mytest : mytests) {
 			System.out.println(mytest.toString());
 		}
 	}
 	
 	
-	@Test
-	public void removess() throws IOException{
+/*	@Test
+	public void and() throws IOException{
 		Datastore datastore = getDatastore();
-		datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1000);
-		datastore.createQuery(Mytest.class).filter("tage >=", 1000);
-		
-		datastore.createQuery(Mytest.class).and(
-			datastore.createQuery(Mytest.class).criteria("width").equal(10),
-			datastore.createQuery(Mytest.class).criteria("height").equal(1)
+		CriteriaContainer container =  datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1050).and(
+			datastore.createQuery(Mytest.class).criteria("name").equal("dddd")
 		);
 		
 		
@@ -95,37 +101,46 @@ public class MorphiaDb {
 	    .field("x").lessThan(5)
 	    .field("y").greaterThan(4)
 	    .field("z").greaterThan(10);
-	}
-	@Test
+	}*/
+	
+	/*@Test
 	public void Aggregation() throws IOException{
 		Datastore datastore = getDatastore();
-		datastore.createAggregation(Mytest.class).group("name").out(School.class);
+		Iterator<Mytest> iterator = datastore.createAggregation(Mytest.class).group("name").out(Mytest.class);
+	    if(iterator.hasNext()) {
+			System.out.println(iterator.next().toString());
+		}
 	}
-	
+	*/
 	/**
 	 * Limiting and Skipping
 	 * @throws IOException
 	 */
 	@Test
-	private void limit () throws IOException {
+	public void limit () throws IOException {
 		Datastore datastore = getDatastore();
 		List<Mytest> mytests =  datastore.createQuery(Mytest.class)
-	    .asList(new FindOptions()
-	    		.skip(10)
-	    		.batchSize(10)
-		        .limit(10));
+	    .asList(new FindOptions().skip(7).batchSize(20).limit(10));
+		for (Mytest mytest : mytests) {
+			System.out.println(mytest.toString());
+		}
 	}
 	
 	@Test
 	public void Ordering() throws IOException{
 		Datastore datastore = getDatastore();
-		datastore.createQuery(Mytest.class).order("name");
+		List<Mytest> mytests = datastore.createQuery(Mytest.class).order("-datetime").asList();
+		for (Mytest mytest : mytests) {
+			System.out.println(mytest.toString());
+		}
 	}
 	
 	@Test
 	public void update(){
 		Datastore datastore = getDatastore();
 	    ops = datastore.createUpdateOperations(Mytest.class).set("name", "Fairmont Chateau Laurier");
+	    
+	    datastore.findAndModify(datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1050), ops, null);
 		ops = datastore.createUpdateOperations(Mytest.class).set("school.Address", "Ottawa");
 		ops = datastore.createUpdateOperations(Mytest.class).inc("stars");
 		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 4);
@@ -135,7 +150,7 @@ public class MorphiaDb {
 		Query<Mytest> underPaidQuery = datastore.createQuery(Mytest.class).filter("salary <=", 3000);
 	    UpdateOperations<Mytest> updateOperations = datastore.createUpdateOperations(Mytest.class).inc("salary", 10000);
 	}
-	
+	/*
 	@Test
 	public void push(){
 		Datastore datastore = getDatastore();
@@ -201,5 +216,5 @@ public class MorphiaDb {
 	    datastore.createQuery(Mytest.class).field("salary").lessThanOrEq(30000).asList();
 	    List<Mytest> underpaid = datastore.createQuery(Mytest.class).filter("salary <=", 30000).asList();
 		
-	}
+	}*/
 }

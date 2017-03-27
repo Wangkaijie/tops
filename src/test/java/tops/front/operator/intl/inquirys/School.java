@@ -1,5 +1,8 @@
 package tops.front.operator.intl.inquirys;
 
+import org.mongodb.morphia.annotations.Embedded;
+
+@Embedded
 public class School {
 	
     private String name;
