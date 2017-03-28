@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.FindAndModifyOptions;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.query.CriteriaContainer;
 import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
@@ -18,6 +19,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.model.Collation;
+import com.mongodb.client.model.DeleteOptions;
 
 import tops.front.operator.intl.inquirys.Mytest;
 import tops.front.operator.intl.inquirys.School;
@@ -86,29 +89,16 @@ public class MorphiaDb {
 	}
 	
 	
-/*	@Test
+	@Test
 	public void and() throws IOException{
 		Datastore datastore = getDatastore();
-		CriteriaContainer container =  datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1050).and(
+		CriteriaContainer container =  datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(10).and(
 			datastore.createQuery(Mytest.class).criteria("name").equal("dddd")
 		);
 		
-		
-		datastore.createQuery(Mytest.class)
-	    .field("x").lessThan(5)
-	    .field("y").greaterThan(4)
-	    .field("z").greaterThan(10);
-	}*/
-	
-	/*@Test
-	public void Aggregation() throws IOException{
-		Datastore datastore = getDatastore();
-		Iterator<Mytest> iterator = datastore.createAggregation(Mytest.class).group("name").out(Mytest.class);
-	    if(iterator.hasNext()) {
-			System.out.println(iterator.next().toString());
-		}
 	}
-	*/
+	
+	
 	/**
 	 * Limiting and Skipping
 	 * @throws IOException
@@ -184,21 +174,6 @@ public class MorphiaDb {
 		UpdateResults results =datastore.update(query, ops, false);
 		System.out.println(results);
 		
-		
-		/*//given roomNumbers = [ 1, 2, 3 ]
-		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [ 1, 2 ]
-		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [1]
-		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [  ]
-		
-		//given roomNumbers = [ 1, 2, 3, 3 ]
-		ops= datastore.createUpdateOperations(Mytest.class).removeAll("roomNumbers", 3);// [ 1, 2 ]
-		//given roomNumbers = [ 1, 2, 3, 3 ]  
-		ops=datastore.createUpdateOperations(Mytest.class).removeAll("roomNumbers", Arrays.asList(2, 3)); // [ 1 ]
-		
-		Query<Mytest> overPaidQuery = datastore.createQuery(Mytest.class).filter("salary >", 100000);
-		datastore.delete(overPaidQuery);*/
-		
-		
 	}
 	
 	@Test
@@ -209,34 +184,27 @@ public class MorphiaDb {
 		UpdateResults results = datastore.updateFirst(query,ops);
 		System.out.println(results);
 	}
-	/*
+	
 	@Test
-	public void Multiple(){
+	public void Set(){
 		Datastore datastore = getDatastore();
-		//set city to Ottawa and increment stars by 1
-		ops = datastore.createUpdateOperations(Mytest.class).set("city", "Ottawa").inc("stars");
-
-		//if you perform multiple operations in one command on the same property, results will vary
-		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 50).inc("stars");  //increments by 1
-		ops = datastore.createUpdateOperations(Mytest.class).inc("stars").inc("stars", 50);  //increments by 50
-
-		//you can't apply conflicting operations to the same property
-		ops = datastore.createUpdateOperations(Mytest.class).set("stars", 1).inc("stars", 50); //causes error
-		
+		UpdateOperations<Mytest> ops = datastore.createUpdateOperations(Mytest.class).set("tage", 10);
+		Query<Mytest>  query  =datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1061);
+		UpdateResults results = datastore.updateFirst(query,ops);
+		System.out.println(results.toString());
 	}
 	@Test
-	public void createIfMissing(){
+	public void delete(){
 		Datastore datastore = getDatastore();
-		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 50);
-		datastore.updateFirst(datastore.createQuery(Mytest.class).field("stars").greaterThan(100),ops, true);
+		Query<Mytest>  query  =datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1061);
+		datastore.delete(query);
+		DeleteOptions deleteOptions =new DeleteOptions();
+		//Collation collation=
+				
+				
+		//datastore.delete(query ,deleteOptions);
+		
 	}
 	
-	public void Querying(){
-		Datastore datastore = getDatastore();
-		final Query<Mytest> query = datastore.createQuery(Mytest.class);
-		final List<Mytest> employees = query.asList();
-	    datastore.createQuery(Mytest.class).field("salary").lessThanOrEq(30000).asList();
-	    List<Mytest> underpaid = datastore.createQuery(Mytest.class).filter("salary <=", 30000).asList();
-		
-	}*/
+	
 }
