@@ -2,20 +2,17 @@ package tops.mongo.db.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.FindAndModifyOptions;
 import org.mongodb.morphia.Morphia;
-import org.mongodb.morphia.query.Criteria;
-import org.mongodb.morphia.query.CriteriaContainer;
 import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
-import org.mongodb.morphia.query.QueryImpl;
 import org.mongodb.morphia.query.UpdateOperations;
+import org.mongodb.morphia.query.UpdateResults;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -26,7 +23,7 @@ import tops.front.operator.intl.inquirys.Mytest;
 import tops.front.operator.intl.inquirys.School;
 
 public class MorphiaDb {
-	UpdateOperations ops  =null;
+	
 	public  Datastore  getDatastore(String DabaName,String Packagename,String Address) throws IOException{
 		Morphia morphia = new Morphia();
 		
@@ -134,37 +131,61 @@ public class MorphiaDb {
 			System.out.println(mytest.toString());
 		}
 	}
-	
+	/**
+	 * 学会这个方法后就觉得其实就是monog的语法的包装，语法会，这个也就会了
+	 */
 	@Test
 	public void update(){
 		Datastore datastore = getDatastore();
-	    ops = datastore.createUpdateOperations(Mytest.class).set("name", "Fairmont Chateau Laurier");
-	    
-	    datastore.findAndModify(datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1050), ops, null);
-		ops = datastore.createUpdateOperations(Mytest.class).set("school.Address", "Ottawa");
-		ops = datastore.createUpdateOperations(Mytest.class).inc("stars");
-		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 4);
-		ops = datastore.createUpdateOperations(Mytest.class).dec("stars");
-		ops = datastore.createUpdateOperations(Mytest.class).inc("stars", -4);
-		
-		Query<Mytest> underPaidQuery = datastore.createQuery(Mytest.class).filter("salary <=", 3000);
-	    UpdateOperations<Mytest> updateOperations = datastore.createUpdateOperations(Mytest.class).inc("salary", 10000);
+		UpdateOperations<Mytest> ops  = datastore.createUpdateOperations(Mytest.class).set("name", "Fairmont Chateau Laurier");
+		Query<Mytest>  query  = datastore.find(Mytest.class).filter("tage ==", 1050);
+	    UpdateResults results =  datastore.update(query, ops);
+	    System.out.println(results.toString());
 	}
-	/*
+	
+	@Test
+	public void updateinc(){
+		Datastore datastore = getDatastore();
+		Query<Mytest>  query  =datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1050);
+		UpdateOperations<Mytest> ops  = datastore.createUpdateOperations(Mytest.class).inc("tage");
+		UpdateResults results =  datastore.update(query, ops);
+		System.out.println(results.toString());
+	}
+	
+	@Test
+	public void findAndModify(){//只改变了第一条满足条件的
+		Datastore datastore = getDatastore();
+		UpdateOperations<Mytest> ops  = datastore.createUpdateOperations(Mytest.class).inc("tage", 10);
+		Query<Mytest>  query  = datastore.find(Mytest.class).filter("tage ==", 1051);
+		FindAndModifyOptions options = new FindAndModifyOptions();
+		options.remove(false);
+		options.returnNew(true);
+		options.upsert(true);
+		Mytest mytest =datastore.findAndModify(query, ops, options);
+		System.out.println(mytest.toString());
+	}
+	
+	
 	@Test
 	public void push(){
 		Datastore datastore = getDatastore();
-		ops = datastore.createUpdateOperations(Mytest.class).push("roomNumbers", 11);
-		ops = datastore.createUpdateOperations(Mytest.class).addToSet("roomNumbers", 11);
+		UpdateOperations<Mytest> ops = datastore.createUpdateOperations(Mytest.class).push("roomNumbers", 13);
+		Query<Mytest>  query  =datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1061);
+		UpdateResults results =datastore.update(query, ops, false);
+		System.out.println(results);
+		
 	}
 	
 	@Test
 	public void remove(){
 		Datastore datastore = getDatastore();
-		//given roomNumbers = [ 1, 2, 3 ]
-		ops = datastore.createUpdateOperations(Mytest.class).removeFirst("roomNumbers"); // [ 2, 3 ]
+		UpdateOperations<Mytest> ops = datastore.createUpdateOperations(Mytest.class).removeFirst("roomNumbers"); // [ 2, 3 ]
+		Query<Mytest>  query  =datastore.createQuery(Mytest.class).field("tage").greaterThanOrEq(1061);
+		UpdateResults results =datastore.update(query, ops, false);
+		System.out.println(results);
 		
-		//given roomNumbers = [ 1, 2, 3 ]
+		
+		/*//given roomNumbers = [ 1, 2, 3 ]
 		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [ 1, 2 ]
 		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [1]
 		ops = datastore.createUpdateOperations(Mytest.class).removeLast("roomNumbers");// [  ]
@@ -175,19 +196,20 @@ public class MorphiaDb {
 		ops=datastore.createUpdateOperations(Mytest.class).removeAll("roomNumbers", Arrays.asList(2, 3)); // [ 1 ]
 		
 		Query<Mytest> overPaidQuery = datastore.createQuery(Mytest.class).filter("salary >", 100000);
-		datastore.delete(overPaidQuery);
+		datastore.delete(overPaidQuery);*/
 		
 		
 	}
 	
 	@Test
-	public void updateFirst(){
+	public void orderAndUpdateFirst(){
 		Datastore datastore = getDatastore();
-	    ops = datastore.createUpdateOperations(Mytest.class).inc("stars", 50);
-		datastore.updateFirst(datastore.find(Mytest.class).order("stars"), ops);
-		datastore.updateFirst(datastore.find(Mytest.class).order("-stars"),ops);
+		UpdateOperations<Mytest>   ops = datastore.createUpdateOperations(Mytest.class).inc("tage", 50);
+		Query<Mytest>  query  =datastore.find(Mytest.class).order("-tage");
+		UpdateResults results = datastore.updateFirst(query,ops);
+		System.out.println(results);
 	}
-	
+	/*
 	@Test
 	public void Multiple(){
 		Datastore datastore = getDatastore();

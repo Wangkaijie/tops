@@ -22,6 +22,7 @@ public class Mytest {
 	private Date datetime;
 	@Embedded
 	private School school;
+	private int roomNumbers;
 	
 	public String getName() {
 		return name;
@@ -53,10 +54,17 @@ public class Mytest {
 	public void setDatetime(Date datetime) {
 		this.datetime = datetime;
 	}
+	public int getRoomNumbers() {
+		return roomNumbers;
+	}
+	public void setRoomNumbers(int roomNumbers) {
+		this.roomNumbers = roomNumbers;
+	}
 	@Override
 	public String toString() {
 		return "Mytest [id=" + id + ", name=" + name + ", tage=" + tage + ", datetime=" + datetime + ", school="
-				+ school + "]";
+				+ school + ", roomNumbers=" + roomNumbers + "]";
 	}
+	
     
 }
