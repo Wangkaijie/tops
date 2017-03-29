@@ -1,9 +1,12 @@
 package tops.front.operator.intl.inquirys;
 
-import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
 
-@Embedded
+@Entity
 public class AnnotationTest {
+	@Id
+	private String id;
 	private int i;
 
 	public int getI() {
@@ -14,4 +17,12 @@ public class AnnotationTest {
 		this.i = i;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+    
 }

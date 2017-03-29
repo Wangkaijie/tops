@@ -1,27 +1,47 @@
 package tops.front.operator.intl.inquirys;
 
-import javax.xml.stream.StreamFilter;
+import java.io.File;
 
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.*;
+import org.mongodb.morphia.annotations.Collation;
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Field;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.IdGetter;
+import org.mongodb.morphia.annotations.Index;
+import org.mongodb.morphia.annotations.Indexed;
+import org.mongodb.morphia.annotations.Indexes;
+import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Reference;
+import org.mongodb.morphia.annotations.Serialized;
+import org.mongodb.morphia.annotations.Transient;
+import org.mongodb.morphia.annotations.Validation;
+import org.mongodb.morphia.annotations.Version;
+import org.mongodb.morphia.utils.IndexType;
 
 @Entity
 @Validation("{adt:{$gt:18}}")
-
+@Indexes({ @Index(fields = @Field(value = "adt", type = IndexType.DESC)), @Index(fields = @Field("CHD")) })
 public class AnnotationTestEntity {
 	@Id
-	private ObjectId id;
+	private ObjectId id;// 和entity成对出现
 	@Property("NewName")
-	private String name;
+	private String name;// 在数据库中保存的是 "NewName" : "Tim"
 	@Reference
 	private AnnotationTest annotationTest;
 	@Serialized
-	private StreamFilter streamFilter;
+	private File streamFilter;// 该对象存储的是序列化后的二进制
 	@Transient
-	private String Transient;
+	private String Transient;// 数据库中没有保存该属性
+	@Indexed
 	private int adt;
+	@Collation(locale = "dddddd")
+	private int CHD;
 	@Version("version")
-	private String Version;
+	private Long Version;// 必须为long类型
+	@Embedded
+	private School school;
 
 	public ObjectId getId() {
 		return id;
@@ -47,11 +67,11 @@ public class AnnotationTestEntity {
 		this.annotationTest = annotationTest;
 	}
 
-	public StreamFilter getStreamFilter() {
+	public File getStreamFilter() {
 		return streamFilter;
 	}
 
-	public void setStreamFilter(StreamFilter streamFilter) {
+	public void setStreamFilter(File streamFilter) {
 		this.streamFilter = streamFilter;
 	}
 
@@ -71,12 +91,28 @@ public class AnnotationTestEntity {
 		this.adt = adt;
 	}
 
-	public String getVersion() {
+	public int getCHD() {
+		return CHD;
+	}
+
+	public void setCHD(int cHD) {
+		CHD = cHD;
+	}
+
+	public Long getVersion() {
 		return Version;
 	}
 
-	public void setVersion(String version) {
+	public void setVersion(Long version) {
 		Version = version;
+	}
+
+	public School getSchool() {
+		return school;
+	}
+
+	public void setSchool(School school) {
+		this.school = school;
 	}
 
 }

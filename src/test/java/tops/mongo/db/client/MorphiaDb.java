@@ -1,9 +1,12 @@
 package tops.mongo.db.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.stream.StreamFilter;
 
 import org.junit.Test;
 import org.mongodb.morphia.Datastore;
@@ -22,6 +25,8 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.model.Collation;
 import com.mongodb.client.model.DeleteOptions;
 
+import tops.front.operator.intl.inquirys.AnnotationTest;
+import tops.front.operator.intl.inquirys.AnnotationTestEntity;
 import tops.front.operator.intl.inquirys.Mytest;
 import tops.front.operator.intl.inquirys.School;
 
@@ -204,6 +209,27 @@ public class MorphiaDb {
 				
 		//datastore.delete(query ,deleteOptions);
 		
+	}
+	@Test
+	public void TestAnnoataion(){
+		Datastore datastore = getDatastore();
+		School school=new School();
+		school.setAddress("deizhi");
+		school.setName("diyizhongxue");
+		AnnotationTest test=new AnnotationTest();
+		test.setId("id");
+		test.setI(11);
+		AnnotationTestEntity annotationTestEntity=new AnnotationTestEntity();
+		annotationTestEntity.setAdt(10);
+		annotationTestEntity.setSchool(school);
+		annotationTestEntity.setAnnotationTest(test);
+		annotationTestEntity.setName("Tim");
+		annotationTestEntity.setCHD(145);
+		annotationTestEntity.setVersion(1000L);
+		annotationTestEntity.setTransient("this a Transient");
+		File streamFilter=new File("/home/wangkaijie/tops.front.operator.intl.inquirys/src/main/resources/spring/applicationContext.xml");
+		annotationTestEntity.setStreamFilter(streamFilter);
+		datastore.save(annotationTestEntity);
 	}
 	
 	

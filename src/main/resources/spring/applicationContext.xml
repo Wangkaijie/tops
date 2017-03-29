@@ -8,7 +8,6 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
  default-autowire="byName" default-lazy-init="true">
  
-   <bean class="tops.front.operator.intl.inquirys.Mytest"  id="mytest"
-   ></bean>
+   <bean class="tops.front.operator.intl.inquirys.Mytest"  id="mytest"></bean>
  
  </beans>
