@@ -8,20 +8,24 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.IndexOptions;
 import org.mongodb.morphia.annotations.Indexed;
+import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Text;
+import org.mongodb.morphia.annotations.Transient;
 
 
 @Entity("Mytest")
-//@Indexes({@Index(fields = {@Field(value = "name")})})
 public class Mytest {
 	@Id
 	private ObjectId id;
-	
+	@Property("mmmm")
 	private String name;
 	@Indexed(options=@IndexOptions(unique=true))
 	private int tage;
 	private Date datetime;
 	@Embedded
 	private School school;
+	@Text
+	@Transient
 	private int roomNumbers;
 	
 	public String getName() {
