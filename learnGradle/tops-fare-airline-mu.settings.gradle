@@ -1,0 +1,5 @@
+include 'tops-fare-airline-mu:tops-fare-airline-mu-proto'
+include 'tops-fare-airline-mu:tops-fare-airline-mu-shopping'
+include 'tops-fare-airline-mu:tops-fare-airline-mu-shopping-client'
+include 'tops-fare-airline-mu:tops-fare-airline-mu-shopping-convertor'
+
